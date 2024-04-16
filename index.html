@@ -48,7 +48,7 @@
 </head>
 <body>
 <h2>属性攻击计算</h2>
-<p>套用的公式：(4 *主属性 + 副属性) * 武器系数 * (攻击力 * (1 + 攻击力%))*0.01</p>
+<p>套用的公式：(4 *主属性 + 副属性) * (攻击力 * (1 + 攻击力%))*0.01</p>
 <form id="calculator-form">
     <label for="mainAtrBase">主属性基础值：</label>
     <input type="number" id="mainAtrBase" required>
@@ -71,6 +71,7 @@
 
     <div class="long-line"></div>
     <br>
+    <p>在当前属性下计算新增的值相当于多少其他值的新增</p>
     <label for="addType" style="width: auto">新增</label>
     <select id="addType" >
         <option value="add_attack_base">攻击力基础</option>
@@ -86,7 +87,7 @@
     <label for="addValue" style="width: auto">值：</label>
     <input type="number" id="addValue" required><br>
 
-    <button type="submit">计算</button>
+    <button type="submit">计算比较值</button>
 </form>
 <div id="result"></div>
 
@@ -167,7 +168,7 @@
             newSumList[listTypeIndex[addTypes[1]]] = sumAtr(...add_atrs);
             var newPower = sumPower(...newSumList);
             console.log(allBase[addTypes[1]],add_atrs,baseSumList,newSumList);
-            var resultHTML = "原始属性攻击为：" + basePower.toFixed(2)+"  新的属性攻击为：" + newPower.toFixed(2) + "<br>";
+            var resultHTML = "不计算武器系数，原始属性攻击为：" + basePower.toFixed(2)+"  新的属性攻击为：" + newPower.toFixed(2) + "<br>";
 
             var diffPower = newPower - basePower;
             for (var atrName of ["attack", "mainAtr", "subAtr"]) {

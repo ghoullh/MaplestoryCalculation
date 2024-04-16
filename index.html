@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>攻击力计算器</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        label {
+            display: inline-block;
+            width: 120px;
+            margin-bottom: 10px;
+            margin-left: 30px;
+        }
+        input[type="number"] {
+            width: 100px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result {
+            margin-top: 20px;
+        }
+        .long-line {
+            margin-top: 20px;
+            width: 100%;
+            height: 2px;
+            background-color: black;
+        }
+        select {
+            padding: 5px;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+
+    </style>
+</head>
+<body>
+<h2>攻击力计算器</h2>
+<form id="calculator-form">
+    <label for="mainAtrBase">主属性基础值：</label>
+    <input type="number" id="mainAtrBase" required>
+    <label for="mainAtrRate">主属性%值：</label>
+    <input type="number" id="mainAtrRate" required>%
+    <label for="mainAtrExt">主属性附加值：</label>
+    <input type="number" id="mainAtrExt" required><br>
+    <label for="subAtrBase">副属性基础值：</label>
+    <input type="number" id="subAtrBase" required>
+    <label for="subAtrRate">副属性%值：</label>
+    <input type="number" id="subAtrRate" required>%
+    <label for="subAtrExt">副属性附加值：</label>
+    <input type="number" id="subAtrExt" required><br>
+    <label for="attackBase">攻击力基础值：</label>
+    <input type="number" id="attackBase" required>
+    <label for="attackRate">攻击力%值：</label>
+    <input type="number" id="attackRate" required>%
+    <label for="attackExt">攻击力附加值：</label>
+    <input type="number" id="attackExt" value="0" required><br>
+
+    <div class="long-line"></div>
+    <br>
+    <label for="addType" style="width: auto">新增</label>
+    <select id="addType" >
+        <option value="add_attack_base">攻击力基础</option>
+        <option value="add_attack_rate">攻击力%</option>
+        <option value="add_attack_ext">攻击力附加</option>
+        <option value="add_mainAtr_base">主属性基础</option>
+        <option value="add_mainAtr_rate">主属性%</option>
+        <option value="add_mainAtr_ext">主属性附加</option>
+        <option value="add_subAtr_base">副属性基础</option>
+        <option value="add_subAtr_rate">副属性%</option>
+        <option value="add_subAtr_ext">副属性附加</option>
+    </select>
+    <label for="addValue" style="width: auto">值：</label>
+    <input type="number" id="addValue" required><br>
+
+    <button type="submit">计算</button>
+</form>
+<div id="result"></div>
+
+<script>
+
+
+        function sumAtr(base, rate, ext) {
+            return base * (100 + rate) / 100 + ext;
+        }
+        function sumPower(mainAtr, subAtr, attack) {
+            return (4 * mainAtr + subAtr) * attack * 0.01;
+        }
+
+        function diffSum(mainAtr, subAtr, attack, atrName, value ) {
+            switch (atrName){
+                case "attack":
+                    return value * 100 / (4 * mainAtr + subAtr);
+                case "mainAtr":
+                    return (value * 100 / attack - subAtr) / 4
+                case "subAtr":
+                    return value * 100 / attack - 4 * mainAtr
+            }
+        }
+
+        function diffAtr(base, rate, ext, type, value){
+            switch (type){
+                case "base":
+                    return (value - ext) * 100/ (100 + rate);
+                case "rate":
+                    return (value - ext) * 100/ base;
+                case "ext":
+                    return value - base * (100 + rate) / 100;
+            }
+        }
+
+
+        var allAddTypes = ["add_attack_base","add_attack_rate","add_attack_ext",
+                           "add_mainAtr_base","add_mainAtr_rate","add_mainAtr_ext",
+                           "add_subAtr_base","add_subAtr_rate","add_subAtr_ext"];
+        var typeIndex = {"base":0, "rate":1, "ext":2};
+        var names = {"attack":"攻击力", "mainAtr": "主属性", "subAtr":"副属性"};
+        var nameTypes = ["基础值","%值","附加值"];
+
+        document.getElementById("calculator-form").addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            var mainAtrBase = parseFloat(document.getElementById("mainAtrBase").value);
+            var mainAtrRate = parseFloat(document.getElementById("mainAtrRate").value);
+            var mainAtrExt = parseFloat(document.getElementById("mainAtrExt").value);
+
+            var subAtrBase = parseFloat(document.getElementById("subAtrBase").value);
+            var subAtrRate = parseFloat(document.getElementById("subAtrRate").value);
+            var subAtrExt = parseFloat(document.getElementById("subAtrExt").value);
+
+            var attackBase = parseFloat(document.getElementById("attackBase").value);
+            var attackRate = parseFloat(document.getElementById("attackRate").value);
+            var attackExt = parseFloat(document.getElementById("attackExt").value);
+
+            var addTypes = document.getElementById("addType").value.split("_");
+            var addValue = parseFloat(document.getElementById("addValue").value);
+
+            var sumAttr = sumAtr(mainAtrBase,mainAtrRate,mainAtrExt);
+            var sumSub = sumAtr(subAtrBase,subAtrRate,subAtrExt);
+            var sumAttack = sumAtr(attackBase,attackRate,attackExt);
+            var baseSumList = [sumAttr,sumSub,sumAttack];
+            var listTypeIndex ={"mainAtr": 0, "attack":2, "subAtr":1}
+            var basePower = sumPower(...baseSumList);
+
+            var allBase = {
+                "attack": [attackBase,attackRate,attackExt],
+                "mainAtr": [mainAtrBase,mainAtrRate,mainAtrExt],
+                "subAtr": [subAtrBase,subAtrRate,subAtrExt]
+            }
+            var add_atrs = allBase[addTypes[1]].slice();
+            debugger
+            add_atrs[typeIndex[addTypes[2]]] += addValue;
+            var newSumList = baseSumList.slice();
+            newSumList[listTypeIndex[addTypes[1]]] = sumAtr(...add_atrs);
+            var newPower = sumPower(...newSumList);
+            console.log(allBase[addTypes[1]],add_atrs,baseSumList,newSumList);
+            var resultHTML = "原始属性攻击为 " + basePower.toFixed(2)+"新的属性攻击为 " + newPower.toFixed(2) + "<br>";
+
+            var diffPower = newPower - basePower;
+            for (var atrName of ["attack", "mainAtr", "subAtr"]) {
+                for (var nameType of ["base", "rate", "ext"]) {
+                    var newSumValue = diffSum(...baseSumList.slice().concat([atrName, newPower]));
+                    var diffAtrValue = diffAtr(...allBase[atrName].slice().concat([nameType, newSumValue])) - allBase[atrName][typeIndex[nameType]];
+                    var msg = "相当于"+names[atrName]+nameTypes[typeIndex[nameType]]+"增加"+diffAtrValue.toFixed(2)  + "<br>";
+                    resultHTML += msg;
+                }
+            }
+            document.getElementById("result").innerHTML = resultHTML;
+
+
+        });
+
+</script>
+</body>
+</html>

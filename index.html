@@ -3,6 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- CSS -->
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.6.2/css/bootstrap.min.css" rel="stylesheet"
+          crossorigin="anonymous">
+    <!-- jQuery and JavaScript Bundle with Popper -->
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.slim.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.6.2/js/bootstrap.bundle.min.js"
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://pyscript.net/releases/2024.4.1/core.css">
+    <script type="module" src="https://pyscript.net/releases/2024.4.1/core.js"></script>
     <title>MapleStory Calculation </title>
     <style>
         body {
@@ -10,25 +19,12 @@
             margin: 0;
             padding: 20px;
         }
-        label {
-            display: inline-block;
-            width: 120px;
-            margin-bottom: 10px;
-            margin-left: 30px;
+        .tab_label2 {
+            width:150px
         }
-        input[type="number"] {
-            width: 100px;
-        }
-        button {
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
+
+
+
         #result {
             margin-top: 20px;
         }
@@ -38,59 +34,273 @@
             height: 2px;
             background-color: black;
         }
-        select {
-            padding: 5px;
-            font-size: 16px;
-            border-radius: 5px;
-        }
+
+
+
+
+
+
+
+
+
 
     </style>
 </head>
 <body>
-<h2>属性攻击计算</h2>
-<p>套用的公式：(4 *主属性 + 副属性) * (攻击力 * (1 + 攻击力%))*0.01</p>
-<form id="calculator-form">
-    <label for="mainAtrBase">主属性基础值：</label>
-    <input type="number" id="mainAtrBase" required>
-    <label for="mainAtrRate">主属性%值：</label>
-    <input type="number" id="mainAtrRate" required>%
-    <label for="mainAtrExt">主属性附加值：</label>
-    <input type="number" id="mainAtrExt" required><br>
-    <label for="subAtrBase">副属性基础值：</label>
-    <input type="number" id="subAtrBase" required>
-    <label for="subAtrRate">副属性%值：</label>
-    <input type="number" id="subAtrRate" required>%
-    <label for="subAtrExt">副属性附加值：</label>
-    <input type="number" id="subAtrExt" required><br>
-    <label for="attackBase">攻击力基础值：</label>
-    <input type="number" id="attackBase" required>
-    <label for="attackRate">攻击力%值：</label>
-    <input type="number" id="attackRate" required>%
-    <label for="attackExt">攻击力附加值：</label>
-    <input type="number" id="attackExt" value="0" required><br>
 
-    <div class="long-line"></div>
-    <br>
-    <p>在当前属性下计算新增的值相当于多少其他值的新增</p>
-    <label for="addType" style="width: auto">新增</label>
-    <select id="addType" >
-        <option value="add_attack_base">攻击力基础</option>
-        <option value="add_attack_rate">攻击力%</option>
-        <option value="add_attack_ext">攻击力附加</option>
-        <option value="add_mainAtr_base">主属性基础</option>
-        <option value="add_mainAtr_rate">主属性%</option>
-        <option value="add_mainAtr_ext">主属性附加</option>
-        <option value="add_subAtr_base">副属性基础</option>
-        <option value="add_subAtr_rate">副属性%</option>
-        <option value="add_subAtr_ext">副属性附加</option>
-    </select>
-    <label for="addValue" style="width: auto">值：</label>
-    <input type="number" id="addValue" required><br>
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="attrCalculation-tab" data-toggle="tab" data-target="#attrCalculation"
+                type="button" role="tab" aria-controls="attrCalculation" aria-selected="true">属性攻击计算
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="bossCalculation-tab" data-toggle="tab" data-target="#bossCalculation" type="button"
+                role="tab" aria-controls="bossCalculation" aria-selected="false">BOSS伤害计算
+        </button>
+    </li>
 
-    <button type="submit">计算比较值</button>
-</form>
+</ul>
+<div class="tab-content" id="myTabContent">
+    <div class="tab-pane fade show active" id="attrCalculation" role="tabpanel" aria-labelledby="attrCalculation-tab">
+        <h3>属性攻击计算</h3>
+        <p><strong>套用的公式：(4 *主属性 + 副属性) * (攻击力 * (1 + 攻击力%))*0.01；不适用于尖兵/白毛/刀飞</strong></p>
+        <form id="calculator-form">
+            <div class="container" style="margin-left:5px">
+                <div class="row justify-content-start">
+                    <div class="input-group mb-3 col">
+                        <div class="input-group-prepend">
+                            <label class="input-group-text" for="mainAtrBase">主属性基础值：</label>
+                        </div>
+                        <input type="number" id="mainAtrBase" required>
+                    </div>
+                    <div class="input-group mb-3 col">
+                        <div class="input-group-prepend">
+                            <label class="input-group-text" for="mainAtrRate">主属性%值：</label>
+                        </div>
+                        <input type="number" id="mainAtrRate" required>
+                        <div class="input-group-append">
+                            <span class="input-group-text">%</span>
+                        </div>
+                    </div>
+
+                    <div class="input-group mb-3 col">
+                        <div class="input-group-prepend">
+                            <label class="input-group-text" for="mainAtrExt">主属性附加值：</label>
+                        </div>
+                        <input type="number" id="mainAtrExt" required><br>
+                    </div>
+                </div>
+                <div class="row justify-content-start">
+                    <div class="input-group mb-3 col">
+                        <div class="input-group-prepend">
+                            <label class="input-group-text" for="subAtrBase">副属性基础值：</label>
+                        </div>
+                        <input type="number" id="subAtrBase" required>
+                    </div>
+                    <div class="input-group mb-3 col">
+                        <div class="input-group-prepend">
+                            <label class="input-group-text" for="subAtrRate">副属性%值：</label>
+                        </div>
+                        <input type="number" id="subAtrRate" required>
+                        <div class="input-group-append">
+                            <span class="input-group-text">%</span>
+                        </div>
+                    </div>
+                    <div class="input-group mb-3 col">
+                        <div class="input-group-prepend">
+                            <label class="input-group-text" for="subAtrExt">副属性附加值：</label>
+                        </div>
+                        <input type="number" id="subAtrExt" required><br>
+                    </div>
+                </div>
+                <div class="row justify-content-start">
+                    <div class="input-group mb-3 col">
+                        <div class="input-group-prepend">
+                            <label class="input-group-text" for="attackBase">攻击力基础值：</label>
+                        </div>
+                        <input type="number" id="attackBase" required>
+                    </div>
+                    <div class="input-group mb-3 col">
+                        <div class="input-group-prepend">
+                            <label class="input-group-text" for="attackRate">攻击力%值：</label>
+                        </div>
+                        <input type="number" id="attackRate" required>
+                        <div class="input-group-append">
+                            <span class="input-group-text">%</span>
+                        </div>
+                    </div>
+                    <div class="input-group mb-3 col">
+                        <div class="input-group-prepend">
+                            <label class="input-group-text" for="attackExt">攻击力附加值：</label>
+                        </div>
+                        <input type="number" id="attackExt" value="0" required><br>
+                    </div>
+                </div>
+            </div>
+            <div class="long-line"></div>
+            <br>
+            <p>在当前属性下计算新增的值相当于多少其他值的新增</p>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text" for="addType">新增</label>
+                    </div>
+                    <select class="custom-select" id="addType">
+                        <option value="add_attack_base">攻击力基础</option>
+                        <option value="add_attack_rate">攻击力%</option>
+                        <option value="add_attack_ext">攻击力附加</option>
+                        <option value="add_mainAtr_base">主属性基础</option>
+                        <option value="add_mainAtr_rate">主属性%</option>
+                        <option value="add_mainAtr_ext">主属性附加</option>
+                        <option value="add_subAtr_base">副属性基础</option>
+                        <option value="add_subAtr_rate">副属性%</option>
+                        <option value="add_subAtr_ext">副属性附加</option>
+                    </select>
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="addValueGroup">值:</span>
+                    </div>
+                    <input type="number" id="addValue" required class="form-control" aria-label="addValue"
+                           aria-describedby="addValueGroup">
+
+                </div>
+            </div>
+            <button class="btn btn-primary"  >计算比较值</button>
+        </form>
+
+    </div>
+    <div class="tab-pane fade" id="bossCalculation" role="tabpanel" aria-labelledby="bossCalculation-tab">
+        <h3>BOSS伤害计算</h3>
+        <p><strong>基础暴击伤害取35%，套用的公式为(1+(伤害+BOSS伤害)/100)*(1+(暴击伤害+35)/100)*(1+最终伤害/100)*(1-((1-无视防御/100)*BOSS防御/100))</strong></p>
+        <form id="boss-calculator-form">
+            <div class="container" style="margin-left:5px">
+                <div class="row justify-content-start align-items-start">
+                    <div class="input-group mb-3 col">
+                        <div class="input-group-prepend">
+                            <label class="input-group-text tab_label2" for="atkRate">伤害：</label>
+                        </div>
+                        <input type="number" id="atkRate" required>
+                        <div class="input-group-append">
+                            <span class="input-group-text">%</span>
+                        </div>
+                    </div>
+                    <div class="input-group mb-3 col">
+                        <div class="input-group-prepend">
+                            <label class="input-group-text tab_label2" for="bossAtkRate">BOSS伤害：</label>
+                        </div>
+                        <input type="number" id="bossAtkRate" required>
+                        <div class="input-group-append">
+                            <span class="input-group-text">%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row justify-content-start align-items-start">
+                    <div class="input-group mb-3 col">
+                        <div class="input-group-prepend">
+                            <label class="input-group-text tab_label2" for="criticalAtkRate">暴击伤害：</label>
+                        </div>
+                        <input type="number" id="criticalAtkRate" required>
+                        <div class="input-group-append">
+                            <span class="input-group-text">%</span>
+                        </div>
+                    </div>
+                    <div class="input-group mb-3 col">
+                        <div class="input-group-prepend">
+                            <label class="input-group-text tab_label2" for="finalAtkRate">最终伤害：</label>
+                        </div>
+                        <input type="number" id="finalAtkRate" required>
+                        <div class="input-group-append">
+                            <span class="input-group-text">%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row justify-content-start align-items-start">
+                    <div class="input-group mb-3 col">
+                        <div class="input-group-prepend">
+                            <label class="input-group-text tab_label2" for="ignoreDefense">无视防御：</label>
+                        </div>
+                        <input type="number" id="ignoreDefense" required>
+                        <div class="input-group-append">
+                            <span class="input-group-text">%</span>
+                        </div>
+                    </div>
+                    <div class="input-group mb-3 col">
+                        <div class="input-group-prepend">
+                            <label class="input-group-text tab_label2" for="bossDefense">BOSS防御：</label>
+                        </div>
+                        <input type="number" id="bossDefense" value="380" required>
+                        <div class="input-group-append">
+                            <span class="input-group-text">%</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="long-line"></div>
+            <br>
+            <p>在当前属性下计算新增的值相当于多少其他值的新增</p>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text" for="bossAddType">新增</label>
+                    </div>
+                    <select class="custom-select" id="bossAddType">
+                        <option value="add_atk_rate">伤害</option>
+                        <option value="add_boss_atk_rate">BOSS伤害</option>
+                        <option value="add_critical_atk_rate">暴击伤害</option>
+                        <option value="add_final_atk_rate">最终伤害</option>
+                        <option value="add_ignore_defense">无视防御</option>
+                    </select>
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" >值:</span>
+                    </div>
+                    <input type="number" id="bossAddValue" required class="form-control" aria-label="bossAddValue"
+                           aria-describedby="bossAddValue">
+                    <div class="input-group-append">
+                            <span class="input-group-text">%</span>
+                        </div>
+                </div>
+            </div>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text" for="baseReplaceIgnoreDefense">无视防御从</label>
+                    </div>
+                     <input type="number" value="0" id="baseReplaceIgnoreDefense" class="form-control" aria-label="baseReplaceIgnoreDefense"
+                           aria-describedby="baseReplaceIgnoreDefense">
+                    <div class="input-group-append">
+                            <span class="input-group-text">%</span>
+                        </div>
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">替换为:</span>
+                    </div>
+                    <input type="number" value="0" id="newReplaceIgnoreDefense" class="form-control" aria-label="newReplaceIgnoreDefense"
+                           aria-describedby="newReplaceIgnoreDefense">
+                    <div class="input-group-append">
+                            <span class="input-group-text">%</span>
+                        </div>
+
+                </div>
+            </div>
+            <div class="custom-control custom-radio custom-control-inline">
+                <input type="radio" id="final_mul" name="customRadioInline" class="custom-control-input" checked>
+                <label class="custom-control-label" for="final_mul">最终伤害使用乘法计算</label>
+            </div>
+            <div class="custom-control custom-radio custom-control-inline">
+                <input type="radio" id="final_add" name="customRadioInline" class="custom-control-input">
+                <label class="custom-control-label" for="final_add">最终伤害使用加法计算</label>
+            </div>
+            <p>萌兽的最终伤害和一部分技能终伤是相加，一部分是相乘</p>
+            <button id="boss_submit" class="btn btn-primary"  type="button">计算比较值</button>
+        </form>
+    </div>
+
+</div>
+
 <div id="result"></div>
-
+<script type="py" src="./boss.py"></script>
 <script>
 
 
@@ -130,6 +340,8 @@
         var typeIndex = {"base":0, "rate":1, "ext":2};
         var names = {"attack":"攻击力", "mainAtr": "主属性", "subAtr":"副属性"};
         var nameTypes = ["基础值","%值","附加值"];
+
+
 
         document.getElementById("calculator-form").addEventListener("submit", function(event) {
             event.preventDefault();
@@ -180,9 +392,16 @@
             }
             document.getElementById("result").innerHTML = resultHTML;
 
-
         });
 
 </script>
+<br>
+<div class="long-line"></div>
+<blockquote class="blockquote text-center">
+    <p class="mb-0">源码在github上，有问题可以在issues上反馈</p>
+    <a href="https://github.com/ghoullh/MaplestoryCalculation" class="badge badge-primary" target="_blank">Github</a>
+</blockquote>
+
+
 </body>
 </html>

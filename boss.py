@@ -88,10 +88,11 @@ def boss_atk_calculation(event):
         else:
             new_ignore_defense = 100 - ((100 - ignore_defense) * (100 - boss_add_value) / 100)
         new_kwargs = copy.deepcopy(kwargs)
-        print(kwargs)
         new_kwargs[boss_add_type] = eval(add_value_variable)
-        print(new_kwargs)
         new_damage = final_damage(**new_kwargs)
+        if source_damage < 0:
+            document.querySelector("#result").innerHTML = "根本破不了防！"
+            return
         result_html = f"原始的最终伤害值为: {round(source_damage, 2)}, 新的最终伤害值为: {round(new_damage, 2)} </br>"
 
         for value_type, name in type_names.items():

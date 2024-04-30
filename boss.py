@@ -45,7 +45,7 @@ def get_add_value(new_value, new_type, old_value, final_is_mul):
     if new_type == 'ignore_defense':
         return 100 - 100*(1 - new_value / 100) / (1-old_value/100) if old_value < 100 else 0
     if new_type == 'final_atk_rate' and final_is_mul:
-        return (1 + new_value / 100)  / (1 + old_value /100) *100 -100
+        return (1 + new_value / 100)  / (1 + old_value /100) * 100 - 100
     return new_value - old_value
 
 
@@ -72,16 +72,19 @@ def boss_atk_calculation(event):
                   'boss_defense': boss_defense}
         source_damage = final_damage(**kwargs)
         add_value_variable = 'new_' + boss_add_type
+        boss_add_value = get_float_value('bossAddValue')
         if base_replace_ignore_defense:
             source_ignore_defense = 100 - (100 - ignore_defense) * 100 / (100 - base_replace_ignore_defense)
             new_ignore_defense = 100 - ((100 - source_ignore_defense) * (100 - new_replace_ignore_defense) / 100)
             add_value_variable = 'new_ignore_defense'
             boss_add_type = "ignore_defense"
             print(f"replace ignore defense {base_replace_ignore_defense} to {new_replace_ignore_defense}, result: {new_ignore_defense}")
+        elif boss_add_type == 'final_atk_rate' and final_is_mul:
+            new_final_atk_rate = (1 + final_atk_rate/100) * ( 1 + boss_add_value/100) * 100 - 100
         elif boss_add_type != 'ignore_defense':
-            exec(f"{add_value_variable} = {boss_add_type} + {get_float_value('bossAddValue')}")
+            exec(f"{add_value_variable} = {boss_add_type} + {boss_add_value}")
         else:
-            new_ignore_defense = 100 - ((100 - ignore_defense) * (100 - get_float_value('bossAddValue')) / 100)
+            new_ignore_defense = 100 - ((100 - ignore_defense) * (100 - boss_add_value) / 100)
         new_kwargs = copy.deepcopy(kwargs)
         print(kwargs)
         new_kwargs[boss_add_type] = eval(add_value_variable)

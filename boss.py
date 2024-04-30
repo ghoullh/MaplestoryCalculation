@@ -73,6 +73,7 @@ def boss_atk_calculation(event):
         source_damage = final_damage(**kwargs)
         add_value_variable = 'new_' + boss_add_type
         boss_add_value = get_float_value('bossAddValue')
+        print(boss_add_type, boss_add_value, final_is_mul)
         if base_replace_ignore_defense:
             source_ignore_defense = 100 - (100 - ignore_defense) * 100 / (100 - base_replace_ignore_defense)
             new_ignore_defense = 100 - ((100 - source_ignore_defense) * (100 - new_replace_ignore_defense) / 100)
@@ -80,8 +81,9 @@ def boss_atk_calculation(event):
             boss_add_type = "ignore_defense"
             print(f"replace ignore defense {base_replace_ignore_defense} to {new_replace_ignore_defense}, result: {new_ignore_defense}")
         elif boss_add_type == 'final_atk_rate' and final_is_mul:
-            new_final_atk_rate = (1 + final_atk_rate/100) * ( 1 + boss_add_value/100) * 100 - 100
+            exec(f"{add_value_variable} = (1 + final_atk_rate/100) * ( 1 + boss_add_value/100) * 100 - 100")
         elif boss_add_type != 'ignore_defense':
+            print('run code', f"{add_value_variable} = {boss_add_type} + {boss_add_value}")
             exec(f"{add_value_variable} = {boss_add_type} + {boss_add_value}")
         else:
             new_ignore_defense = 100 - ((100 - ignore_defense) * (100 - boss_add_value) / 100)
